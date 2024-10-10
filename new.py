@@ -27,10 +27,15 @@ load_dotenv()
 
 # Load OpenAI API key
 OPENAI_KEY = os.getenv('OPENAI_KEY')
+user = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWORD') 
+host = os.getenv('DB_HOST')
+database = os.getenv('DB_NAME')
 
 
 # Create a SQLAlchemy engine
-engine = create_engine(os.getenv('DB_CONN_STRING'))
+#engine = create_engine(os.getenv('DB_CONN_STRING'))
+engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database}")
 
 # Wrap the engine with SQLDatabase
 db = SQLDatabase(engine)
