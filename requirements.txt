@@ -29,5 +29,3 @@ referencing==0.35.1
 regex==2024.9.11
 SQLAlchemy==2.0.35
 streamlit==1.38.0
-mysqlclient==2.2.4
-mysql-connector-python==9.0.0
