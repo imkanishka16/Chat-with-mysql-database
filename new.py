@@ -60,8 +60,8 @@ def get_sql_chain(db):
     If can't generate SQL query for user's question, only 'None'
 
     Instruction:
-    -To filter 'plastic pollution' and 'Plastics circularity', always use the 'Application' column.
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'Source_of_Finance' column.
+    -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
     -To filter 'Advanced technical and managerial training', 'Education and training in transport and storage' and 'Environmental research', 'Waste management/disposal', always use the 'Purpose' column.
     -To filter 'Africa', 'Asia', 'Europe', 'Latin America And The Caribbean', 'Oceania' and 'North America', always use the 'Region' column.
     -To filter 'Multi Donor National', 'Multilateral' and 'Multi Donor Regional', always use the 'Fund Type' column.
