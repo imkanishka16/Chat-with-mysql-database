@@ -60,16 +60,18 @@ def get_sql_chain(db):
     If can't generate SQL query for user's question, only 'None'
 
     Instruction:
-    -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'Source_of_Finance' column.
+    -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
     -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
-    -To filter 'Advanced technical and managerial training', 'Education and training in transport and storage' and 'Environmental research', 'Waste management/disposal', always use the 'Purpose' column.
-    -To filter 'Africa', 'Asia', 'Europe', 'Latin America And The Caribbean', 'Oceania' and 'North America', always use the 'Region' column.
-    -To filter 'Multi Donor National', 'Multilateral' and 'Multi Donor Regional', always use the 'Fund Type' column.
-    -To filter 'Adaptation for Smallholder Agriculture Programme (ASAP)', 'Adaptation Fund (AF)', 'Amazon Fund', 'Forest Investment Program (FIP)', 'Global Climate Change Alliance (GCCA)', 'Global Energy Efficiency and Renewable Energy Fund (GEEREF)' and 'Global Environment Facility (GEF4)', always use the 'Fund_Name' column.
-    -Unique value of 'SIDS', 'LLDC', 'FCS' and 'IDA' are 'Y-' and 'N/A'
-    -To filter 'Total funding', 'Deal value','total capital' and 'total spend', always use the 'Commitment' column.
-    -There are 6 types of ODA such as  'Ocean ODA', 'Sustainable Ocean ODA', 'Land -Based ODA', 'Plastic ODA', 'Solid Waste ODA', 'Wastewater ODA'
-    
+    -'pathways' and 'archetype' columns are in the section of Purpose.
+    -To filter 'Africa', 'Asia', 'Europe', 'Latin America And The Caribbean', 'Oceania' and 'North America', always use the 'region' column.
+    -To filter 'Multi Donor National', 'Multilateral' and 'Multi Donor Regional', always use the 'fund_type' column.
+    -To filter 'Adaptation for Smallholder Agriculture Programme (ASAP)', 'Adaptation Fund (AF)', 'Amazon Fund', 'Forest Investment Program (FIP)', 'Global Climate Change Alliance (GCCA)', 'Global Energy Efficiency and Renewable Energy Fund (GEEREF)' and 'Global Environment Facility (GEF4)', always use the 'fund_name' column.
+    -Unique value of 'sids', 'lldc', 'fcs' and 'ida' are '0' and '1'
+    -To check IDA eligible countries need to filter always '1' from 'ida' column.
+    -To filter 'Total funding', 'Deal value','total capital' and 'total spend' 'amount of private investment', always use the 'commitment' column.
+    -There are 7 types of ODA such as  'ocean_oda', 'sustainable_ocean_oda', 'land_based_oda', 'plastic_oda','plastic_specific_oda','solid_waste_oda', 'wastewater_oda', In case of asking of ODA as a general quesiton, you have to get the all 1 values for all 7 columns and get the answer.
+    -In case of asking of breakdown of one of sub_category as a general quesiton, you have to use 'sources_intermediaries' column and get the answer. 
+
     
     For example:
     Question: What was the total spend towards tackling plastic pollution in Indonesia from 2018 to 2023?
