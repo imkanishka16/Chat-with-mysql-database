@@ -45,6 +45,36 @@ def _strip(text: str) -> str:
 
 
 
+database_store = 'investment_tci_prompt'
+engine2 = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database_store}")
+from sqlalchemy import Column, Integer, Text, DateTime
+from sqlalchemy.orm import declarative_base, sessionmaker
+from datetime import datetime
+
+Base = declarative_base()
+
+class UserQuery(Base):
+    __tablename__ = 'user_queries'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_query = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+# Create the table
+Base.metadata.create_all(engine2)
+
+def store_user_query(query: str, engine):
+    if not query:  # Check if query is None or an empty string
+        print("Error: Query cannot be empty.")
+        return
+    
+    session = sessionmaker(bind=engine)()
+    new_query = UserQuery(user_query=query, timestamp=datetime.now())
+    session.add(new_query)
+    session.commit()
+    session.close()
+
+
+
 
 def get_sql_chain(db):
   template = """
@@ -247,6 +277,7 @@ for message in st.session_state.chat_history:
             st.markdown(message.content)
 
 user_query = st.chat_input("Type a message...")
+store_user_query(user_query, engine2)
 if user_query is not None and user_query.strip() != "":
     st.session_state.chat_history.append(HumanMessage(content=user_query))
     
