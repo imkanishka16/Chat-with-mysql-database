@@ -92,7 +92,7 @@ def get_sql_chain(db):
     Instruction:
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
     -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
-    -'pathways' and 'archetype' columns are in the section of Purpose.
+    -To filter 'Value Recovery', 'Circular Design and Production', 'Circular Use', 'Clean-up', 'Digital Mapping', 'Incineration', 'Managed Landfilling', 'Operational Platforms', 'Other Services', 'Plastic Waste-to-Energy', 'Plastic Waste-to-Fuel', 'Recovery for controlled disposal', 'Research and Development' and 'Training/ Capacity Building/ Education', always use the 'archetype' column.
     -In case of asking of program/project description as a general quesiton, you have to use 'sector_name' and 'fund_name' columns and get the answer.
     -In case of asking of Fund Category as a general quesiton, you have to use 'fund_type' column and get the answer.
     -To filter 'Africa', 'Asia', 'Europe', 'Latin America And The Caribbean', 'Oceania' and 'North America', always use the 'region' column.
