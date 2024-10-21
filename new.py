@@ -101,7 +101,9 @@ def get_sql_chain(db):
     -To check IDA eligible countries need to filter always '1' from 'ida' column.
     -To filter 'Total funding', 'Deal value','total capital' and 'total spend' 'amount of private investment', always use the 'commitment' column.
     -There are 7 types of ODA such as  'ocean_oda', 'sustainable_ocean_oda', 'land_based_oda', 'plastic_oda','plastic_specific_oda','solid_waste_oda', 'wastewater_oda', In case of asking of ODA as a general quesiton, you have to get the all 1 values for all 7 columns and get the answer.
-    -In case of asking of breakdown of one of sub_category as a general quesiton, you have to use 'sources_intermediaries' column and get the answer. 
+    -In case of asking of breakdown of one of sub_category as a general quesiton, you have to use 'sources_intermediaries' column and get the answer.
+    -In case of asking of type of financial flow as a general quesiton, you have to use 'sub_category' column and get the answer.
+    -There is columns like ft_grant. don't get SUM(ft_grant) AS grant like this
 
     
     For example:
