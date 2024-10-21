@@ -318,4 +318,4 @@ if user_query is not None and user_query.strip() != "":
         # st.markdown(text_answer)
         st.markdown(text_answer)
         
-    st.session_state.chat_history.append(AIMessage(content=response))
+    st.session_state.chat_history.append(AIMessage(content=text_answer))
