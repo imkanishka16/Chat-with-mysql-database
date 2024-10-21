@@ -106,8 +106,8 @@ def get_sql_chain(db):
     -In case of asking of type of financial flow as a general quesiton, you have to use 'sub_category' column and get the answer.
     
     For example:
-    Question: What was the total spend towards tackling plastic pollution in Indonesia from 2018 to 2023?
-    SQL Query: SELECT SUM(Commitment), FROM investment WHERE Country = 'Indonesia' AND AND Year >= 2018 AND AND Year <= 2023 AND Application = 'plastic pollution';
+    Question: How much funds are committed by the Amazon Fund?
+    SQL Query: SELECT SUM(commitment) FROM finances WHERE fund_name = 'Amazon Fund';
     
     Your turn:
     
