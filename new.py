@@ -315,6 +315,15 @@ if user_query is not None and user_query.strip() != "":
         # st.markdown(graph_type)
         # st.markdown(data_array)
         # st.markdown(text_answer)
-        st.markdown(text_answer)
+        # st.markdown(text_answer)
         
-    st.session_state.chat_history.append(AIMessage(content=response))
+    # st.session_state.chat_history.append(AIMessage(content=response))
+    if text_answer:
+        st.session_state.chat_history.append(AIMessage(content=text_answer))
+        with st.chat_message("AI"):
+            st.markdown(text_answer)
+    else:
+        fallback_message = "I couldn't generate a valid response. Please try again."
+        st.session_state.chat_history.append(AIMessage(content=fallback_message))
+        with st.chat_message("AI"):
+            st.markdown(fallback_message)
