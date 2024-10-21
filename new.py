@@ -78,7 +78,7 @@ def store_user_query(query: str, engine):
 
 def get_sql_chain(db):
   template = """
-    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database. This is a data set of public and private funding that was directed towards plastic pollution.
+    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database. This dataset consists of the global financial flows from both public and private sectors directed to tackle plastic pollution. The dataset covers multiple data points for each financial flow, including the time period, the name, institution type, and geography of both the flow provider and recipient, the application of the financial flow, and the flow amount based on multiple types of financial flow, such as loan, equity, or grant.
     Based on the table schema below, write a SQL query that would answer the user's question. Take the conversation history into account.
     
     <SCHEMA>{schema}</SCHEMA>
