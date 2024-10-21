@@ -141,6 +141,8 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     template = """
     You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database.
     Based on the table schema below, question, sql query, and sql response, write a natural language response.
+    - You MUST double check your query before executing it.If you get an error while executing a query,rerun the query and try again.
+    - DO NOT MAKE UP AN ANSWER OR USE PRIOR KNOWLEDGE, ONLY USE THE RESULTS OF THE CALCULATIONS YOU HAVE DONE.
     <SCHEMA>{schema}</SCHEMA>
 
     Conversation History: {chat_history}
