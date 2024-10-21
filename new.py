@@ -78,7 +78,7 @@ def store_user_query(query: str, engine):
 
 def get_sql_chain(db):
   template = """
-    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database. This is a data set of public and private funding that was directed towards plastic pollution. Question is not about plastic pollution give response as 'That information is not captured by my database'.
+    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database. This is a data set of public and private funding that was directed towards plastic pollution.
     Based on the table schema below, write a SQL query that would answer the user's question. Take the conversation history into account.
     
     <SCHEMA>{schema}</SCHEMA>
