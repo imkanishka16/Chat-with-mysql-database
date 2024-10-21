@@ -78,8 +78,8 @@ def store_user_query(query: str, engine):
 
 def get_sql_chain(db):
   template = """
-    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database. This dataset consists of the global financial flows from both public and private sectors directed to tackle plastic pollution. The dataset covers multiple data points for each financial flow, including the time period, the name, institution type, and geography of both the flow provider and recipient, the application of the financial flow, and the flow amount based on multiple types of financial flow, such as loan, equity, or grant.
-    Based on the table schema below, write a SQL query that would answer the user's question. Take the conversation history into account.
+    You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database.This dataset consists of the global financial flows from both public and private sectors directed to tackle plastic pollution. The dataset covers multiple data points for each financial flow, including the time period, the name, institution type, and geography of both the flow provider and recipient, the application of the financial flow, and the flow amount based on multiple types of financial flow, such as loan, equity, or grant.
+    Based on the table schema below, write a SQL query that would answer the user's question.
     
     <SCHEMA>{schema}</SCHEMA>
     
@@ -87,10 +87,11 @@ def get_sql_chain(db):
     
     Write only the SQL query and nothing else. Do not wrap the SQL query in any other text, not even backticks.
     DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.)to the database.
-
+  
     Instruction:
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
     -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
+    -There is columns like ft_grant. don't get 'SUM(ft_grant) AS grant' like this use another name instead.
     -To filter 'Value Recovery', 'Circular Design and Production', 'Circular Use', 'Clean-up', 'Digital Mapping', 'Incineration', 'Managed Landfilling', 'Operational Platforms', 'Other Services', 'Plastic Waste-to-Energy', 'Plastic Waste-to-Fuel', 'Recovery for controlled disposal', 'Research and Development' and 'Training/ Capacity Building/ Education', always use the 'archetype' column.
     -In case of asking of program/project description as a general quesiton, you have to use 'sector_name' and 'fund_name' columns and get the answer.
     -In case of asking of Fund Category as a general quesiton, you have to use 'fund_type' column and get the answer.
@@ -100,11 +101,9 @@ def get_sql_chain(db):
     -Unique value of 'sids', 'lldc', 'fcs' and 'ida' are '0' and '1'
     -To check IDA eligible countries need to filter always '1' from 'ida' column.
     -To filter 'Total funding', 'Deal value','total capital' and 'total spend' 'amount of private investment', always use the 'commitment' column.
-    -There are 7 types of ODA such as  'ocean_oda', 'sustainable_ocean_oda', 'land_based_oda', 'plastic_oda','plastic_specific_oda','solid_waste_oda', 'wastewater_oda', In case of asking of ODA as a general quesiton, you have to get the all 1 values for all 7 columns and get the answer.
+    -There are 7 types of ODA such as  'ocean_oda', 'sustainable_ocean_oda', 'land_based_oda', 'plastic_oda','plastic_specific_oda','solid_waste_oda', 'wastewater_oda', In case of asking of ODA as a general quesiton, you have to get all 1 values for all 7 columns always and get the answer.
     -In case of asking of breakdown of one of sub_category as a general quesiton, you have to use 'sources_intermediaries' column and get the answer.
     -In case of asking of type of financial flow as a general quesiton, you have to use 'sub_category' column and get the answer.
-    -There is columns like ft_grant. don't get SUM(ft_grant) AS grant like this
-
     
     For example:
     Question: What was the total spend towards tackling plastic pollution in Indonesia from 2018 to 2023?
