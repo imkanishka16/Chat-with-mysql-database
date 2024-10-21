@@ -87,7 +87,6 @@ def get_sql_chain(db):
     
     Write only the SQL query and nothing else. Do not wrap the SQL query in any other text, not even backticks.
     DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.)to the database.
-    If can't generate SQL query for user's question, only 'None'
 
     Instruction:
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
