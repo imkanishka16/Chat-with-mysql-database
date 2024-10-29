@@ -36,4 +36,5 @@ pydantic_core==2.23.4
 pyasn1_modules==0.4.1
 pycryptodome==3.21.0
 protobuf==4.25.5
-chromadb==0.5.16
+chromadb[duckdb]==0.5.16
+# chromadb==0.5.16
