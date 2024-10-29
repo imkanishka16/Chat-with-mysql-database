@@ -345,8 +345,11 @@ from sqlalchemy import create_engine
 import json
 import re
 from typing import Tuple, List,Dict,Any
+import sqlite3
+print(sqlite3.sqlite_version)
 
 import chromadb
+# from chromadb.config import Settings
 from langchain.chains import RetrievalQA
 from langchain.schema import BaseRetriever
 from langchain_core.documents import Document
