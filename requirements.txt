@@ -29,6 +29,7 @@ referencing==0.35.1
 regex==2024.9.11
 SQLAlchemy==2.0.35
 streamlit==1.38.0
+sentence-transformers==3.2.1
 chroma-hnswlib==0.7.6
 chromadb==0.5.15
 pydantic==2.9.2
