@@ -37,4 +37,4 @@ pyasn1_modules==0.4.1
 pycryptodome==3.21.0
 protobuf==4.25.5
 sqlite-utils==3.37.0
-chromadb
+chromadb==0.3.29
