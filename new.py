@@ -945,58 +945,58 @@ def initialize_session_state():
             }
         ]
 
-def main():
+# def main():
       
-    st.set_page_config(page_title="The Circuate Initiative Assistant",page_icon=":speech_balloon:")
+#     st.set_page_config(page_title="The Circuate Initiative Assistant",page_icon=":speech_balloon:")
     
-    # Initialize session state
-    initialize_session_state()
+#     # Initialize session state
+#     initialize_session_state()
     
-    # Application header
-    st.title("TCI's Assistant🤖")
+#     # Application header
+#     st.title("TCI's Assistant🤖")
     
-    # Chat interface
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            if message["role"] == "assistant":
-                st.write(message["content"]["text_answer"])
-                if message["content"].get("graph_needed") == "yes" and message["content"].get("data_array"):
-                    fig = create_plotly_chart(
-                        message["content"]["data_array"],
-                        message["content"]["graph_type"]
-                    )
-                    if fig:
-                        st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.write(message["content"])
+#     # Chat interface
+#     for message in st.session_state.messages:
+#         with st.chat_message(message["role"]):
+#             if message["role"] == "assistant":
+#                 st.write(message["content"]["text_answer"])
+#                 if message["content"].get("graph_needed") == "yes" and message["content"].get("data_array"):
+#                     fig = create_plotly_chart(
+#                         message["content"]["data_array"],
+#                         message["content"]["graph_type"]
+#                     )
+#                     if fig:
+#                         st.plotly_chart(fig, use_container_width=True)
+#             else:
+#                 st.write(message["content"])
     
-    # Chat input
-    if prompt := st.chat_input("Ask your question here"):
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
+#     # Chat input
+#     if prompt := st.chat_input("Ask your question here"):
+#         # Add user message to chat history
+#         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        # Get bot response
-        with st.chat_message("user"):
-            st.write(prompt)
+#         # Get bot response
+#         with st.chat_message("user"):
+#             st.write(prompt)
             
-        with st.chat_message("assistant"):
-            response = get_chatbot_response(prompt)
-            st.write(response["text_answer"])
+#         with st.chat_message("assistant"):
+#             response = get_chatbot_response(prompt)
+#             st.write(response["text_answer"])
             
-            # Display graph if needed
-            if response.get("graph_needed") == "yes" and response.get("data_array"):
-                fig = create_plotly_chart(
-                    response["data_array"],
-                    response["graph_type"]
-                )
-                if fig:
-                    st.plotly_chart(fig, use_container_width=True)
+#             # Display graph if needed
+#             if response.get("graph_needed") == "yes" and response.get("data_array"):
+#                 fig = create_plotly_chart(
+#                     response["data_array"],
+#                     response["graph_type"]
+#                 )
+#                 if fig:
+#                     st.plotly_chart(fig, use_container_width=True)
             
-            # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": response})
+#             # Add assistant response to chat history
+#             st.session_state.messages.append({"role": "assistant", "content": response})
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 ###End of function calling
 ########################################################################################################
 
