@@ -23,7 +23,7 @@ jobs:
     - name: Copy files to EC2
       env:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOST: ec2-user@13.235.75.2
+        HOST: ubuntu@13.235.75.2
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }} 
       run: |
         echo "$PRIVATE_KEY" > private_key.pem
