@@ -26,9 +26,9 @@ jobs:
         HOST: ec2-user@13.235.75.2
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }} 
       run: |
-        echo "$PRIVATE_KEY" > TCI-AI-App.ppk
-        chmod 600 TCI-AI-App.ppk
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
        
         echo "OPENAI_KEY=$OPENAI_KEY" > .env
-        scp -i TCI-AI-App.ppk -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
-        ssh -i TCI-AI-App.ppk -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
+        scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
+        ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
