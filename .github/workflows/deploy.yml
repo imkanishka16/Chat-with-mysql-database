@@ -1,34 +1,25 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+name: Deploy to EC2
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
-
-    - name: Copy files to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOST: ubuntu@13.235.75.2
-        OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }} 
-      run: |
-        echo "$PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
-       
-        echo "OPENAI_KEY=$OPENAI_KEY" > .env
-        scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
-        ssh -i private_key.pem -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
+      - uses: actions/checkout@v2
+      
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.PRIVATE_KEY }}" > private_key.pem
+          sudo chmod 600 private_key.pem
+          
+      # Debug step (remove in production)
+      - name: Debug private key
+        run: |
+          if [ -f private_key.pem ]; then
+            ls -l private_key.pem
+            head -n 1 private_key.pem
+          fi
+          
+      - name: Deploy to EC2
+        run: |
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r ./* ${{ secrets.HOST }}:~/app/
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.HOST }} 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
