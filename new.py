@@ -821,17 +821,28 @@ functions = [
     },
 ]
 
-def get_chatbot_response(user_message: str):
-    """Main function to handle user queries and route them to appropriate functions."""
+def get_chatbot_response_with_history(user_message: str, chat_history: list):
+    """Modified main function to handle user queries with chat history."""
     client = OpenAI(api_key=OPENAI_KEY)
     
+    # Convert chat history to the format OpenAI expects
     messages = [
         {"role": "system", "content": """You are a specialized financial data assistant. For queries about:
          - Numbers, statistics, funding amounts, trends: use execute_sql_query
          - Definitions, concepts, methodologies: use retrieve_from_document
-         Always use one of these functions - don't answer directly."""},
-        {"role": "user", "content": user_message}
+         Always use one of these functions - don't answer directly.
+         For follow-up questions, use the context from previous messages to understand what the user is referring to."""}
     ]
+    
+    # Add chat history
+    for msg in chat_history:
+        messages.append({
+            "role": "user" if msg["role"] == "user" else "assistant",
+            "content": msg["content"] if msg["role"] == "user" else str(msg["content"])
+        })
+    
+    # Add current message
+    messages.append({"role": "user", "content": user_message})
 
     completion = client.chat.completions.create(
         model="gpt-4-0613",
@@ -854,6 +865,44 @@ def get_chatbot_response(user_message: str):
         return result
     else:
         return {"error": "No function was called"}
+
+
+# def get_chatbot_response(user_message: str):
+#     """Main function to handle user queries and route them to appropriate functions."""
+#     client = OpenAI(api_key=OPENAI_KEY)
+    
+#     messages = [
+#         {"role": "system", "content": """You are a specialized financial data assistant. For queries about:
+#          - Numbers, statistics, funding amounts, trends: use execute_sql_query
+#          - Definitions, concepts, methodologies: use retrieve_from_document
+#          Always use one of these functions - don't answer directly."""},
+#         {"role": "user", "content": user_message}
+#     ]
+
+#     completion = client.chat.completions.create(
+#         model="gpt-4-0613",
+#         messages=messages,
+#         functions=functions,
+#         function_call="auto"
+#     )
+
+#     response = completion.choices[0].message
+
+#     if response.function_call:
+#         function_name = response.function_call.name
+#         function_args = json.loads(response.function_call.arguments)
+        
+#         if function_name == "execute_sql_query":
+#             result = execute_sql_query(function_args["user_query"], db)
+#         elif function_name == "retrieve_from_document":
+#             result = retrieve_from_document(function_args["user_query"])
+            
+#         return result
+#     else:
+#         return {"error": "No function was called"}
+
+
+
 
 def create_plotly_chart(data_array, graph_type):
     """Create a Plotly chart based on the data array and graph type."""
@@ -950,3 +999,66 @@ if __name__ == "__main__":
     main()
 ###End of function calling
 ########################################################################################################
+
+
+# #############Flask Route###########################
+from flask import Flask, request, jsonify, session
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
+app.secret_key = 'Abc123@'
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        if not request.is_json:
+            return jsonify({
+                'error': 'Content-Type must be application/json'
+            }), 400
+
+        data = request.get_json()
+        if 'message' not in data:
+            return jsonify({
+                'error': 'message field is required'
+            }), 400
+
+        # Initialize chat history if it doesn't exist
+        if 'chat_history' not in session:
+            session['chat_history'] = []
+
+        # Get response with chat history
+        response = get_chatbot_response_with_history(data['message'], session['chat_history'])
+
+        # Update chat history
+        session['chat_history'].append({
+            "role": "user",
+            "content": data['message']
+        })
+        session['chat_history'].append({
+            "role": "assistant",
+            "content": response
+        })
+
+        # Keep only last N messages (e.g., last 10 messages) to prevent session from growing too large
+        max_history = 10
+        if len(session['chat_history']) > max_history * 2:  # *2 because we store both user and assistant messages
+            session['chat_history'] = session['chat_history'][-max_history*2:]
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/clear-history', methods=['POST'])
+def clear_history():
+    if 'chat_history' in session:
+        session['chat_history'] = []
+    return jsonify({"message": "Chat history cleared"}), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
+
+
