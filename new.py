@@ -340,7 +340,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-import streamlit as st
+# import streamlit as st
 from sqlalchemy import create_engine
 import json
 import re
@@ -365,14 +365,14 @@ import pandas as pd
 from sqlalchemy import Column, Integer, Text, DateTime
 import json
 from openai import OpenAI
-import plotly.express as px
-import plotly.graph_objects as go
+# import plotly.express as px
+# import plotly.graph_objects as go
 
 load_dotenv()
 
 ##################################################################################################3
 #RAG part
-chroma_client = chromadb.HttpClient(host='13.235.75.2', port=8000)
+chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
 chroma_collection = chroma_client.get_collection("tci_glossary")
 
 OPENAI_KEY = os.getenv('OPENAI_KEY')
@@ -904,27 +904,27 @@ def get_chatbot_response_with_history(user_message: str, chat_history: list):
 
 
 
-def create_plotly_chart(data_array, graph_type):
-    """Create a Plotly chart based on the data array and graph type."""
-    if not data_array:
-        return None
+# def create_plotly_chart(data_array, graph_type):
+#     """Create a Plotly chart based on the data array and graph type."""
+#     if not data_array:
+#         return None
     
-    df = pd.DataFrame(data_array)
+#     df = pd.DataFrame(data_array)
     
-    if graph_type == 'bar':
-        fig = px.bar(df, x=df.columns[0], y=df.columns[1])
-    elif graph_type == 'line':
-        fig = px.line(df, x=df.columns[0], y=df.columns[1])
-    elif graph_type == 'pie':
-        fig = px.pie(df, values=df.columns[1], names=df.columns[0])
-    else:
-        fig = px.bar(df, x=df.columns[0], y=df.columns[1]) 
+#     if graph_type == 'bar':
+#         fig = px.bar(df, x=df.columns[0], y=df.columns[1])
+#     elif graph_type == 'line':
+#         fig = px.line(df, x=df.columns[0], y=df.columns[1])
+#     elif graph_type == 'pie':
+#         fig = px.pie(df, values=df.columns[1], names=df.columns[0])
+#     else:
+#         fig = px.bar(df, x=df.columns[0], y=df.columns[1]) 
         
-    fig.update_layout(
-        margin=dict(l=20, r=20, t=40, b=20),
-        height=400
-    )
-    return fig
+#     fig.update_layout(
+#         margin=dict(l=20, r=20, t=40, b=20),
+#         height=400
+#     )
+#     return fig
 
 # def initialize_session_state():
 #     """Initialize session state variables."""

@@ -23,31 +23,31 @@ jobs:
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > TCI_key_pair.pem
-        chmod 600 TCI_key_pair.pem
+        echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > TCI_new_.pem
+        chmod 600 TCI_new_.pem
         # Verify key format (optional, remove in production)
-        if ! grep -q "BEGIN" TCI_key_pair.pem; then
+        if ! grep -q "BEGIN" TCI_new_.pem; then
           echo "Error: Invalid key format"
           exit 1
         fi
 
     - name: Deploy to EC2
       env:
-        HOST: ubuntu@13.201.223.168
+        HOST: ubuntu@3.110.107.185
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
       run: |
         # Create .env file
         echo "OPENAI_KEY=$OPENAI_API_KEY" > .env
         
         # Test SSH connection first
-        if ! ssh -i TCI_key_pair.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 $HOST 'echo "SSH connection successful"'; then
+        if ! ssh -i TCI_new_.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 $HOST 'echo "SSH connection successful"'; then
           echo "SSH connection failed"
           exit 1
         fi
         
         # Create app directory if it doesn't exist
-        ssh -i TCI_key_pair.pem -o StrictHostKeyChecking=no $HOST 'mkdir -p ~/app'
+        ssh -i TCI_new_.pem -o StrictHostKeyChecking=no $HOST 'mkdir -p ~/app'
         
         # Copy files and deploy
-        scp -i TCI_key_pair.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
-        ssh -i TCI_key_pair.pem -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
+        scp -i TCI_new_.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
+        ssh -i TCI_new_.pem -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
