@@ -25,7 +25,6 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > TCI_new_.pem
         chmod 600 TCI_new_.pem
-        # Verify key format (optional, remove in production)
         if ! grep -q "BEGIN" TCI_new_.pem; then
           echo "Error: Invalid key format"
           exit 1
@@ -36,18 +35,26 @@ jobs:
         HOST: ubuntu@3.110.107.185
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
       run: |
-        # Create .env file
-        echo "OPENAI_API_KEY=$OPENAI_API_KEY" > .env
+        # Create comprehensive .env file
+        cat > .env << EOL
+        OPENAI_API_KEY=${OPENAI_API_KEY}
+        DB_HOST=${{ secrets.DB_HOST }}
+        DB_USER=${{ secrets.DB_USER }}
+        DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+        DB_NAME=${{ secrets.DB_NAME }}
+        EOL
         
-        # Test SSH connection first
+        # Test SSH connection
         if ! ssh -i TCI_new_.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 $HOST 'echo "SSH connection successful"'; then
           echo "SSH connection failed"
           exit 1
         fi
         
-        # Create app directory if it doesn't exist
-        ssh -i TCI_new_.pem -o StrictHostKeyChecking=no $HOST 'mkdir -p ~/app'
+        # Create app directory and ensure it's clean
+        ssh -i TCI_new_.pem -o StrictHostKeyChecking=no $HOST 'mkdir -p ~/app && rm -rf ~/app/*'
         
-        # Copy files and deploy
-        scp -i TCI_new_.pem -o StrictHostKeyChecking=no -r ./* $HOST:~/app/
+        # Copy files including .env
+        scp -i TCI_new_.pem -o StrictHostKeyChecking=no -r ./* .env $HOST:~/app/
+        
+        # Make deploy script executable and run it
         ssh -i TCI_new_.pem -o StrictHostKeyChecking=no $HOST 'cd ~/app && chmod +x deploy.sh && ./deploy.sh'
