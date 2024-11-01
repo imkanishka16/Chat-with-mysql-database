@@ -370,12 +370,18 @@ from openai import OpenAI
 
 load_dotenv()
 
+OPENAI_API_KEY = os.getenv('OPENAI_KEY')
+user = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWORD') 
+host = os.getenv('DB_HOST')
+database = os.getenv('DB_NAME')
+
 ##################################################################################################3
 #RAG part
+# chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
 chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
 chroma_collection = chroma_client.get_collection("tci_glossary")
 
-OPENAI_KEY = os.getenv('OPENAI_KEY')
 
 class ChromaDBRetriever(BaseRetriever, BaseModel):
     """Custom retriever for ChromaDB that properly implements Pydantic BaseModel"""
@@ -397,7 +403,7 @@ class ChromaDBRetriever(BaseRetriever, BaseModel):
 retriever = ChromaDBRetriever()
 
 
-llm = ChatOpenAI(api_key=OPENAI_KEY, temperature=0, model="gpt-4o")
+llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4o")
 
 def rag_response(question: str) -> dict:
     
@@ -442,11 +448,7 @@ def rag_response(question: str) -> dict:
 # db = SQLDatabase(engine)
 
 # Load OpenAI API key
-OPENAI_KEY = os.getenv('OPENAI_KEY')
-user = os.getenv('DB_USER')
-password = os.getenv('DB_PASSWORD') 
-host = os.getenv('DB_HOST')
-database = os.getenv('DB_NAME')
+
 
 
 # Create a SQLAlchemy engine
@@ -534,7 +536,7 @@ def get_sql_chain(db):
     
   prompt = ChatPromptTemplate.from_template(template)
   
-  llm = ChatOpenAI(api_key=OPENAI_KEY, temperature=0, model="gpt-4-0125-preview")
+  llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4-0125-preview")
 
   
   def get_schema(_):
@@ -604,7 +606,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
 
     prompt = ChatPromptTemplate.from_template(template)
     
-    llm = ChatOpenAI(api_key=OPENAI_KEY, temperature=0, model="gpt-4-0125-preview")
+    llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4-0125-preview")
     
     try:
         chain = (
@@ -751,7 +753,7 @@ def extract_response_data(result):
 ###Function Calling Part
 
 # Initialize database connections
-OPENAI_KEY = os.getenv('OPENAI_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_KEY')
 user = os.getenv('DB_USER')
 password = os.getenv('DB_PASSWORD') 
 host = os.getenv('DB_HOST')
@@ -823,7 +825,7 @@ functions = [
 
 def get_chatbot_response_with_history(user_message: str, chat_history: list):
     """Modified main function to handle user queries with chat history."""
-    client = OpenAI(api_key=OPENAI_KEY)
+    client = OpenAI(api_key=OPENAI_API_KEY)
     
     # Convert chat history to the format OpenAI expects
     messages = [
@@ -930,20 +932,20 @@ def get_chatbot_response_with_history(user_message: str, chat_history: list):
 #     """Initialize session state variables."""
 #     if 'messages' not in st.session_state:
 #         st.session_state.messages = []
-def initialize_session_state():
-    """Initialize session state variables."""
-    if 'messages' not in st.session_state:
-        st.session_state.messages = [
-            {
-                "role": "assistant", 
-                "content": {
-                    "text_answer": "Hello! I am an AI chatbot specialized in global financial flows directed to tackle plastic pollution. You can ask me specifics about these financial flows, definitions, or methodologies.",
-                    "graph_needed": "no",
-                    "graph_type": None,
-                    "data_array": None
-                }
-            }
-        ]
+# def initialize_session_state():
+#     """Initialize session state variables."""
+#     if 'messages' not in st.session_state:
+#         st.session_state.messages = [
+#             {
+#                 "role": "assistant", 
+#                 "content": {
+#                     "text_answer": "Hello! I am an AI chatbot specialized in global financial flows directed to tackle plastic pollution. You can ask me specifics about these financial flows, definitions, or methodologies.",
+#                     "graph_needed": "no",
+#                     "graph_type": None,
+#                     "data_array": None
+#                 }
+#             }
+#         ]
 
 # def main():
       
