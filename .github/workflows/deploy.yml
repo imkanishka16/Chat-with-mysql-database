@@ -37,7 +37,7 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
       run: |
         # Create .env file
-        echo "OPENAI_KEY=$OPENAI_API_KEY" > .env
+        echo "OPENAI_API_KEY=$OPENAI_API_KEY" > .env
         
         # Test SSH connection first
         if ! ssh -i TCI_new_.pem -o StrictHostKeyChecking=no -o ConnectTimeout=10 $HOST 'echo "SSH connection successful"'; then
