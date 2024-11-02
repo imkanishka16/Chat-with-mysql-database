@@ -332,7 +332,7 @@
 
 
 ###################################################################################################################
-######################New App with Function Calling################################################################
+#####################New App with Function Calling################################################################
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -376,8 +376,9 @@ password = os.getenv('DB_PASSWORD')
 host = os.getenv('DB_HOST')
 database = os.getenv('DB_NAME')
 
-##################################################################################################3
-#RAG part
+##################################################################################################
+###########################RAG part###############################################################
+
 # chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
 chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
 chroma_collection = chroma_client.get_collection("tci_glossary")
@@ -441,18 +442,6 @@ def rag_response(question: str) -> dict:
 
 
 
-# # Create a SQLAlchemy engine
-# engine = create_engine(os.getenv('DB_CONN_STRING'))
-# engine2 = create_engine(os.getenv('DB_CONN_STRING2'))
-# # Wrap the engine with SQLDatabase
-# db = SQLDatabase(engine)
-
-# Load OpenAI API key
-
-
-
-# Create a SQLAlchemy engine
-#engine = create_engine(os.getenv('DB_CONN_STRING'))
 engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database}")
 database_store = 'investment_tci_prompt'
 engine2 = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database_store}")
@@ -490,7 +479,7 @@ def store_user_query(query: str, engine):
     session.commit()
     session.close()
 
-#  Question is not about plastic pollution give response as 'That information is not captured by my database'.
+
 
 def get_sql_chain(db):
   template = """
@@ -531,9 +520,7 @@ def get_sql_chain(db):
     Question: {question}
     SQL Query:
     """
-
-
-    
+  
   prompt = ChatPromptTemplate.from_template(template)
   
   llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4-0125-preview")
@@ -549,8 +536,8 @@ def get_sql_chain(db):
     | StrOutputParser()
   )
 
-    # -In case of asking of Private Equity as a general quesiton, you have to use 'ft_equity' column and get the answer.
-#  - If SQL query result is 'None', then give text_answer as 'Not include in the Database'
+
+
 def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     sql_chain = get_sql_chain(db)
     
