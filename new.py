@@ -365,6 +365,7 @@ import pandas as pd
 from sqlalchemy import Column, Integer, Text, DateTime
 import json
 from openai import OpenAI
+from datetime import datetime
 # import plotly.express as px
 # import plotly.graph_objects as go
 
@@ -433,7 +434,8 @@ def rag_response(question: str) -> dict:
         raw_result = qa_chain.invoke({"query": question})
         # Get just the answer text and wrap it in the desired format
         answer_text = raw_result.get('result', '').strip()
-        return {"text_answer": answer_text}
+        return answer_text
+        # return {"text_answer": answer_text}
     except Exception as e:
         print(f"Error during chain execution: {str(e)}")
         return {"text_answer": "An error occurred while processing your question."}
@@ -556,7 +558,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
 
     
     
-    Please decide if the data should be visualized using one of the following graph types: 'line chart', 'stack bar chart', 'bar chart', 'sankey chart'. 
+    Please decide if the data should be visualized using one of the following graph types: 'line chart', 'stack bar chart', 'bar chart', 'sankey chart'.  
     If a graph is required, provide the data in the following formats:
 
     - **Line Chart**: Use a list of dictionaries with x and y values:
@@ -566,6 +568,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
           ...
       ]
       ```
+
     - **Stack Bar Chart**: Use a list of dictionaries with categories and stacked values:
       ```python
       [
@@ -573,6 +576,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
           ...
       ]
       ```
+   
     - **Bar Chart**: Use a list of dictionaries with categories and values:
       ```python
       [
@@ -586,7 +590,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     
     Answer format:
     - graph_needed: "yes" or "no"
-    - graph_type: one of ['line chart', 'stack bar chart', 'bar chart', 'sankey chart'] (if graph_needed is "yes")
+    - graph_type: one of ['line_chart', 'stack_bar_chart', 'bar_chart', 'sankey_chart'] (if graph_needed is "yes")
     - data_array: python data list (if graph_needed is "yes")
     - text_answer: The direct answer (if graph_needed is "no")
     """
@@ -615,7 +619,9 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
         return f"Error occurred while generating response: {str(e)}"
 
 
-# Function to extract fields using regex
+import json
+import re
+
 def extract_response_data(result):
     # Updated regex patterns
     graph_needed_pattern = r'graph_needed:\s*"?(yes|no|[\w\s]+)"?'
@@ -633,12 +639,8 @@ def extract_response_data(result):
     data_array_str = data_array.group(1) if data_array else None
 
     text_pattern = r'text_answer:\s*(\S.*)'
-
-
     text_output = re.search(text_pattern, result)
-
     text_str = text_output.group(1).strip().strip('"') if text_output else None
-
 
     print("=========== data passed to plot the graph =============")
     print(graph_needed_value)
@@ -648,20 +650,151 @@ def extract_response_data(result):
     print(text_str)
 
     if data_array_str:
-        # Clean the data array string and convert it to a Python list
-        data_string = f"[{data_array_str}]" # Replace single quotes with double quotes
+        data_string = f"[{data_array_str}]"
         try:
-            # Convert the string to a list of dictionaries
             data_array_value = json.loads(data_string)
-          # Convert string to Python list
         except json.JSONDecodeError:
             print("Error decoding JSON from data_array.")
             data_array_value = None
     else:
         data_array_value = None
 
-    return graph_needed_value, graph_type_value, data_array_value,text_str
+    # Process the data to a dynamic format
+    if data_array_value and isinstance(data_array_value, list) and len(data_array_value) > 0:
+        # Use the first entry to determine label and dataset keys dynamically
+        first_entry = data_array_value[0]
+        
+        # Use any key as a label key if it appears in all entries
+        possible_keys = list(first_entry.keys())
+        
+        # Choose the first available key as label key and use the rest for dataset values
+        label_key = possible_keys[0]
+        data_keys = possible_keys[1:] if len(possible_keys) > 1 else []
+        
+        # Extract labels and datasets
+        labels = [item.get(label_key, "N/A") for item in data_array_value]
+        datasets = [
+            tuple(item.get(key, None) for key in data_keys)
+            for item in data_array_value
+        ]
+        
+        formatted_data = {
+            "labels": labels,
+            "datasets": datasets,
+            "legend": False
+        }
+    else:
+        formatted_data = {"error": "Data array is empty or not in expected format."}
+
+    return graph_needed_value, graph_type_value, formatted_data, text_str
+
+
+
+
+# import json
+# import re
+
+# def extract_response_data(result):
+#     # Updated regex patterns
+#     graph_needed_pattern = r'graph_needed:\s*"?(yes|no|[\w\s]+)"?'
+#     graph_type_pattern = r'graph_type:\s*(\S.*)'
+#     data_array_pattern = r'\[\s*(.*?)\s*\]'
+
+#     # Extract fields
+#     graph_needed = re.search(graph_needed_pattern, result)
+#     graph_type = re.search(graph_type_pattern, result)
+#     data_array = re.search(data_array_pattern, result, re.DOTALL)
+
+#     # Extract and clean values
+#     graph_needed_value = graph_needed.group(1) if graph_needed else None
+#     graph_type_value = graph_type.group(1).strip().strip('"') if graph_type else None
+#     data_array_str = data_array.group(1) if data_array else None
+
+#     text_pattern = r'text_answer:\s*(\S.*)'
+#     text_output = re.search(text_pattern, result)
+#     text_str = text_output.group(1).strip().strip('"') if text_output else None
+
+#     print("=========== data passed to plot the graph =============")
+#     print(graph_needed_value)
+#     print(graph_type_value)
+#     print(data_array_str)
+#     print("=======================================================")
+#     print(text_str)
+
+#     if data_array_str:
+#         data_string = f"[{data_array_str}]"  # Ensure it’s a JSON array format
+#         try:
+#             data_array_value = json.loads(data_string)
+            
+#             # Dynamically create the transformed data structure
+#             transformed_data = {}
+#             for item in data_array_value:
+#                 for key, value in item.items():
+#                     if key not in transformed_data:
+#                         transformed_data[key] = []  # Initialize list for new keys
+#                     transformed_data[key].append(value)
+
+#         except json.JSONDecodeError:
+#             print("Error decoding JSON from data_array.")
+#             transformed_data = None
+#     else:
+#         transformed_data = None
+
+#     return graph_needed_value, graph_type_value, transformed_data, text_str
+
+
+
+
+# # Function to extract fields using regex
+# def extract_response_data(result):
+#     # Updated regex patterns
+#     graph_needed_pattern = r'graph_needed:\s*"?(yes|no|[\w\s]+)"?'
+#     graph_type_pattern = r'graph_type:\s*(\S.*)'
+#     data_array_pattern = r'\[\s*(.*?)\s*\]'
+
+#     # Extract fields
+#     graph_needed = re.search(graph_needed_pattern, result)
+#     graph_type = re.search(graph_type_pattern, result)
+#     data_array = re.search(data_array_pattern, result, re.DOTALL)
+
+#     # Extract and clean values
+#     graph_needed_value = graph_needed.group(1) if graph_needed else None
+#     graph_type_value = graph_type.group(1).strip().strip('"') if graph_type else None
+#     data_array_str = data_array.group(1) if data_array else None
+
+#     text_pattern = r'text_answer:\s*(\S.*)'
+
+
+#     text_output = re.search(text_pattern, result)
+
+#     text_str = text_output.group(1).strip().strip('"') if text_output else None
+
+
+#     print("=========== data passed to plot the graph =============")
+#     print(graph_needed_value)
+#     print(graph_type_value)
+#     print(data_array_str)
+#     print("=======================================================")
+#     print(text_str)
+
+#     if data_array_str:
+#         # Clean the data array string and convert it to a Python list
+#         data_string = f"[{data_array_str}]" # Replace single quotes with double quotes
+#         try:
+#             # Convert the string to a list of dictionaries
+#             data_array_value = json.loads(data_string)
+#           # Convert string to Python list
+#         except json.JSONDecodeError:
+#             print("Error decoding JSON from data_array.")
+#             data_array_value = None
+#     else:
+#         data_array_value = None
+
+#     return graph_needed_value, graph_type_value, data_array_value,text_str
  
+
+
+
   
 
 # if "chat_history" not in st.session_state:
@@ -762,21 +895,40 @@ def execute_sql_query(user_query: str, db):
 
     response = get_response(user_query, db, chat_history)
     graph_needed, graph_type, data_array, text_answer = extract_response_data(response)
+    current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     if text_answer:
         return {
-            'text_answer': text_answer,
-            'graph_needed': graph_needed,
-            'graph_type': graph_type,
-            'data_array': data_array
+            'provider':'bot',
+            'datetime':current_timestamp,
+            'type':graph_type,
+            'content': text_answer,
+            'data': data_array
         }
     else:
-        return {'error': 'No valid response generated'}
+        return {
+            'provider':'bot',
+            'datetime':current_timestamp,
+            'type':'error',
+            'content': 'No valid response generated',
+            'data':None
+        }
+
 
 def retrieve_from_document(user_query: str):
     """Retrieve definitional, conceptual, and contextual information from documents."""
     response = rag_response(user_query)
-    return response
+    # Get the current UTC timestamp
+    current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if response:
+        return {
+            'provider':'bot',
+            'datetime':current_timestamp,
+            'type':'text',
+            'content':response,
+            'data': None
+        }
+    # return response
 
 # Function
 functions = [
