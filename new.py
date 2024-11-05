@@ -163,6 +163,7 @@ def get_sql_chain(db):
     DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.)to the database.
   
     Instruction:
+    -Data in this database refers to funding, investments and overall fund flows directed towards tackling plastic pollution and plastic circularity.
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
     -When asked of questions by type of funding always refer to 'sub_category' column. 
     -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
@@ -174,7 +175,7 @@ def get_sql_chain(db):
     -To filter by fund name such as  'Adaptation for Smallholder Agriculture Programme (ASAP)', 'Adaptation Fund (AF)', 'Amazon Fund', 'Forest Investment Program (FIP)', 'Global Climate Change Alliance (GCCA)', and 'Global Environment Facility (GEF4)', always use the 'fund_name' column.
     -Unique value of 'sids', 'lldc', 'fcs' and 'ida' are '0' and '1'
     -To check IDA eligible countries need to filter always from 'ida' column. Ids value '1' means eligible and '0' means not eligible. 
-    -To filter 'Total funding', 'Deal value','total capital' and 'total spend' 'amount of private investment', 'investment' or 'commitment' always use the 'financial_flow' column.
+    -To filter 'Total funding', 'Deal value','total capital' and 'total spend' 'amount of private investment', 'investment' or 'commitment' always use the 'financial_flow' column. And the values are always in USD.
     -There are 7 types of ODA such as  'ocean_oda', 'sustainable_ocean_oda', 'land_based_oda', 'plastic_oda','plastic_specific_oda','solid_waste_oda', 'wastewater_oda', when ask of ODA as a general question, you have to get all 1 values for all 7 columns always and get the answer.
 
     
