@@ -180,8 +180,8 @@ def get_sql_chain(db):
 
     
     For example:
-    Question: Which region received the highest amount of funding in 2022?
-    SQL Query: SELECT region, SUM(commitment) AS total_funding FROM finances WHERE year = 2022 GROUP BY region ORDER BY total_funding DESC LIMIT 1;
+    Question: Based on the last 5 years, trend of funding towards plastic pollution, what do you expect in the next 3 years?
+    SQL Query: SELECT pathway, SUM(financial_flow) AS total_funding FROM finances WHERE pathway IN ('Circular Pathways', 'Non-circular Pathways', 'Supporting Pathways') GROUP BY pathway;
     Question: What is the split of funding between circular pathways and non-circular pathways?
     SQL Query: SELECT pathways, SUM(commitment) AS total_funding FROM finances WHERE pathways IN ('Circular Pathways', 'Non-circular Pathways') GROUP BY pathways;
     
@@ -646,7 +646,13 @@ def chat():
         if len(session['chat_history']) > max_history * 2:  # *2 because we store both user and assistant messages
             session['chat_history'] = session['chat_history'][-max_history*2:]
 
-        return jsonify(response), 200
+
+        sql_chain = get_sql_chain(db)
+        response1 = sql_chain.invoke({
+                "chat_history":db,
+                "question":'message'
+            })
+        return jsonify(response,response1), 200
 
     except Exception as e:
         return jsonify({
