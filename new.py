@@ -647,12 +647,12 @@ def chat():
             session['chat_history'] = session['chat_history'][-max_history*2:]
 
 
-        sql_chain = get_sql_chain(db)
-        response1 = sql_chain.invoke({
-                "chat_history":db,
-                "question":'message'
-            })
-        return jsonify(response,response1), 200
+        # sql_chain = get_sql_chain(db)
+        # response1 = sql_chain.invoke({
+        #         "chat_history":db,
+        #         "question":'message'
+        #     })
+        return jsonify(response), 200
 
     except Exception as e:
         return jsonify({
