@@ -48,7 +48,7 @@ database = os.getenv('DB_NAME')
 ###########################RAG part###############################################################
 
 # chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
-chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
+chroma_client = chromadb.HttpClient(host='3.110.204.137', port=8000)
 chroma_collection = chroma_client.get_collection("tci_glossary")
 
 
@@ -149,7 +149,7 @@ def store_user_query(query: str, engine):
     session.close()
 
 
-
+# -Data in this database refers to funding, investments and overall fund flows directed towards tackling plastic pollution and plastic circularity.
 def get_sql_chain(db):
   template = """
     You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database.This dataset consists of the global financial flows from both public and private sectors directed to tackle plastic pollution. The dataset covers multiple data points for each financial flow, including the time period, the name, institution type, and geography of both the flow provider and recipient, the application of the financial flow, and the flow amount based on multiple types of financial flow, such as loan, equity, or grant.
@@ -163,7 +163,6 @@ def get_sql_chain(db):
     DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.)to the database.
   
     Instruction:
-    -Data in this database refers to funding, investments and overall fund flows directed towards tackling plastic pollution and plastic circularity.
     -To filter 'Domestic Finance', 'Development Finance','Private Finance' and 'MEA Finance', always use the 'sub_category' column.
     -When asked of questions by type of funding always refer to 'sub_category' column. 
     -To filter 'Circular Pathways', 'Non-circular Pathways' and 'Supporting Pathways', always use the 'pathways' column.
@@ -180,11 +179,15 @@ def get_sql_chain(db):
 
     
     For example:
-    Question: Based on the last 5 years, trend of funding towards plastic pollution, what do you expect in the next 3 years?
-    SQL Query: SELECT pathway, SUM(financial_flow) AS total_funding FROM finances WHERE pathway IN ('Circular Pathways', 'Non-circular Pathways', 'Supporting Pathways') GROUP BY pathway;
-    Question: What is the split of funding between circular pathways and non-circular pathways?
-    SQL Query: SELECT pathways, SUM(commitment) AS total_funding FROM finances WHERE pathways IN ('Circular Pathways', 'Non-circular Pathways') GROUP BY pathways;
-    
+    1. Question: Based on the last 5 years, trend of funding towards plastic pollution, what do you expect in the next 3 years?
+       SQL Query: SELECT pathway, SUM(financial_flow) AS total_funding FROM finances WHERE pathway IN ('Circular Pathways', 'Non-circular Pathways', 'Supporting Pathways') GROUP BY pathway;
+
+    2. Question: What is the split of funding between circular pathways and non-circular pathways?
+       SQL Query: SELECT pathways, SUM(financial_flow) AS total_funding FROM finances WHERE pathways IN ('Circular Pathways', 'Non-circular Pathways') GROUP BY pathways;
+
+    3. Question: Which country is the biggest official development assistance provider for tackling plastic pollution in 2021?
+       SQL Query: SELECT provider_country, SUM(financial_flow) AS total_funding FROM finances WHERE year = 2021 GROUP BY provider_country ORDER BY total_funding DESC LIMIT 1;
+
     Your turn:
     
     Question: {question}
@@ -193,7 +196,7 @@ def get_sql_chain(db):
   
   prompt = ChatPromptTemplate.from_template(template)
   
-  llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4-0125-preview")
+  llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4")
 
   
   def get_schema(_):
@@ -208,13 +211,73 @@ def get_sql_chain(db):
 
 
 
+# def get_sql_chain(db):
+#   template = """
+#     You are a data analyst at a company. You are interacting with a user who is asking questions about the company's database. This dataset consists of global financial flows from public and private sectors directed at tackling plastic pollution. The dataset includes various data points, such as time periods, names, institution types, geographies of both providers and recipients, applications, and flow amounts based on multiple types of financial flows (e.g., loan, equity, grant).
+
+#     Refer to the table schema below to generate a SQL query that directly answers the user's question.
+
+#     <SCHEMA>{schema}</SCHEMA>
+
+#     Conversation History: {chat_history}
+
+#     **Instructions for SQL Generation:**
+#     - **Do not wrap the SQL query in any symbols, such as backticks (`) or quotation marks.** Output the query as plain SQL.
+    
+#     - **Column-Specific Filters**:
+#         - Use `sub_category` to filter for "Domestic Finance," "Development Finance," "Private Finance," and "MEA Finance."
+#         - Use `pathways` for "Circular Pathways," "Non-circular Pathways," and "Supporting Pathways."
+#         - Use `archetype` for categories like "Value Recovery," "Circular Design and Production," and "Recovery for controlled disposal."
+#         - Use `region` to filter for continents, e.g., "Africa," "Asia," etc.
+#         - Use `fund_type` for "Multi Donor National," "Multilateral," etc.
+#         - Use `fund_name` for specific funds, such as "Adaptation Fund (AF)," "Amazon Fund," etc.
+#         - Use `ida` to filter IDA eligibility, where 1 means eligible, and 0 means not eligible.
+#         - Use `financial_flow` for financial terms, e.g., "Total funding," "Deal value," etc., always in USD.
+
+#     - **Specific Conditions**:
+#         - Avoid `SUM(ft_grant) AS grant`; choose an alternative name for the alias.
+#         - For ODA-related questions, return rows with 1 values across all 7 ODA types (`ocean_oda`, `plastic_oda`, etc.), except when the user’s question contains "development assistance tackling plastic pollution"—in that case, do not filter by the `plastic_oda` column.
+#         - For general descriptions of programs/projects, use `sector_name`.
+
+#     **Examples**:
+#     1. Question: Based on the last 5 years, trend of funding towards plastic pollution, what do you expect in the next 3 years?
+#        SQL Query: SELECT pathway, SUM(financial_flow) AS total_funding FROM finances WHERE pathway IN ('Circular Pathways', 'Non-circular Pathways', 'Supporting Pathways') GROUP BY pathway;
+
+#     2. Question: What is the split of funding between circular pathways and non-circular pathways?
+#        SQL Query: SELECT pathways, SUM(financial_flow) AS total_funding FROM finances WHERE pathways IN ('Circular Pathways', 'Non-circular Pathways') GROUP BY pathways;
+
+#     3. Question: Which country is the biggest official development assistance provider for tackling plastic pollution in 2021?
+#        SQL Query: SELECT provider_country, SUM(financial_flow) AS total_funding FROM finances WHERE year = 2021 GROUP BY provider_country ORDER BY total_funding DESC LIMIT 1;
+
+#     Your turn:
+
+#     Question: {question}
+#     SQL Query:
+#     """
+  
+#   prompt = ChatPromptTemplate.from_template(template)
+  
+#   llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0, model="gpt-4")
+
+  
+#   def get_schema(_):
+#     return db.get_table_info()
+  
+#   return (
+#     RunnablePassthrough.assign(schema=get_schema)
+#     | prompt
+#     | llm
+#     | StrOutputParser()
+#   )
+
+
 def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     sql_chain = get_sql_chain(db)
     
     template = """
     You are a data analyst at a company. You are interacting with a user who is asking you questions about the company's database.
     Based on the table schema below, question, sql query, and sql response, write a natural language response.You should execute same SQL suery that provided.
-    - You MUST double check your query before executing it.If you get an error while executing a query,rerun the query and try again.
+    - You MUST double check your query before executing it.Please execute provided SQL query only.
     - DO NOT MAKE UP AN ANSWER OR USE PRIOR KNOWLEDGE, ONLY USE THE RESULTS OF THE CALCULATIONS YOU HAVE DONE.
 
     <SCHEMA>{schema}</SCHEMA>
@@ -224,8 +287,6 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     User question: {question}
     SQL Response: {response}
 
-    
-    
     Please decide if the data should be visualized using one of the following graph types: 'line chart', 'stack bar chart', 'bar chart', 'sankey chart'.  
     If a graph is required, provide the data in the following formats:
 
