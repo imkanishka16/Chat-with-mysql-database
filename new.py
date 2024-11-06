@@ -48,7 +48,7 @@ database = os.getenv('DB_NAME')
 ###########################RAG part###############################################################
 
 # chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
-chroma_client = chromadb.HttpClient(host='3.110.204.137', port=8000)
+chroma_client = chromadb.HttpClient(host='3.108.173.11', port=8000)
 chroma_collection = chroma_client.get_collection("tci_glossary")
 
 

@@ -32,7 +32,7 @@ jobs:
 
     - name: Deploy to EC2
       env:
-        HOST: ubuntu@3.110.204.137
+        HOST: ubuntu@3.108.173.11
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
       run: |
         # Create comprehensive .env file

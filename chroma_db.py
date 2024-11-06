@@ -20,7 +20,7 @@ character_split_texts = character_splitter.split_text('\n\n'.join(pdf_texts))
 
 embedding_function = SentenceTransformerEmbeddingFunction()
 
-chroma_client = chromadb.HttpClient(host='3.110.204.137', port=8000)
+chroma_client = chromadb.HttpClient(host='3.108.173.11', port=8000)
 # chroma_client = chromadb.HttpClient(host='localhost', port=8000)
 chroma_collection = chroma_client.create_collection("tci_glossary", embedding_function=embedding_function,metadata={"hnsw:space": "l2"})
 
