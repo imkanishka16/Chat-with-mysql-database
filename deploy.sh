@@ -45,7 +45,7 @@ fi
 # Build and run Docker container
 if [ -f "Dockerfile" ]; then
     sudo docker build --tag flask-app .
-    sudo docker run -d -p 5000:5000 flask-app
+    sudo docker run -d -p 5000:5000 --env-file=.env flask-app
 else
     echo "Warning: Dockerfile not found"
 fi
