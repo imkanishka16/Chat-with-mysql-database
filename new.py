@@ -1237,11 +1237,151 @@ def extract_response_data(result):
     return graph_needed_value, graph_type_value, formatted_data, text_str
 
 
+# from flask import Flask, request, jsonify
+# from langchain_core.messages import HumanMessage, AIMessage
+# from datetime import datetime
+
+# app = Flask(__name__)
+
+# # In-memory chat history for demo purposes
+# chat_history = [{"role": "AI", "content": "Hello! I'm a SQL assistant. Ask me anything about your database."}]
+
+# @app.route('/api/chat', methods=['POST'])
+# def chat():
+#     try:
+#         if not request.is_json:
+#             return jsonify({'error': 'Content-Type must be application/json'}), 400
+
+#         data = request.get_json()
+#         if 'message' not in data:
+#             return jsonify({'error': 'Message field is required'}), 400
+
+#         user_query = data['message'].strip()
+#         if not user_query:
+#             return jsonify({'error': 'Query cannot be empty.'}), 400
+
+#         # Prepare chat history for get_response function
+#         formatted_history = []
+#         for msg in chat_history:
+#             role = msg.get("role")
+#             content = msg.get("content")
+#             if content is None:
+#                 return jsonify({"error": "Message content missing in chat history"}), 500
+#             if role == "user":
+#                 formatted_history.append(HumanMessage(content=content))
+#             elif role == "AI":
+#                 formatted_history.append(AIMessage(content=content))
+
+#         # Generate response with existing function
+#         response = get_response(user_query, db, formatted_history)
+#         graph_needed, graph_type, data_array, text_answer = extract_response_data(response)
+
+#         # Append messages to chat history
+#         chat_history.append({"role": "user", "content": user_query})
+#         chat_history.append({"role": "AI", "content": text_answer})
+
+#         # Keep only last N messages to limit chat history size
+#         max_history = 10
+#         if len(chat_history) > max_history * 2:
+#             del chat_history[:-max_history * 2]
+
+#         current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#         # Return structured JSON response
+#         return jsonify({
+#             'provider':'bot',
+#             'datetime':current_timestamp,
+#             'type':graph_type,
+#             'content': text_answer,
+#             'data': data_array
+#         }), 200
+
+#     except Exception as e:
+#         return jsonify({
+#             'provider':'bot',
+#             'datetime':current_timestamp,
+#             'type':'error',
+#             'content': 'Unfortunately I am unable to provide a response for that. Could you send me the prompt again?',
+#             'data':None
+#         }), 500
+
+# @app.route('/api/clear-history', methods=['POST'])
+# def clear_history():
+#     global chat_history
+#     chat_history = [{"role": "AI", "content": "Hello! I'm a SQL assistant. Ask me anything about your database."}]
+#     return jsonify({"message": "Chat history cleared"}), 200
+
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000, debug=False)
+
+
+# from flask import Flask, request, jsonify, session
+# from flask_cors import CORS
+# app = Flask(__name__)
+# CORS(app)
+# app.secret_key = 'Abc123@'
+
+# @app.route('/api/chat', methods=['POST'])
+# def chat():
+#     try:
+#         if not request.is_json:
+#             return jsonify({
+#                 'error': 'Content-Type must be application/json'
+#             }), 400
+
+#         data = request.get_json()
+#         if 'message' not in data:
+#             return jsonify({
+#                 'error': 'message field is required'
+#             }), 400
+
+#         # Initialize chat history if it doesn't exist
+#         if 'chat_history' not in session:
+#             session['chat_history'] = []
+
+#         # Get response with chat history
+#         response = get_chatbot_response_with_history(data['message'], session['chat_history'])
+
+#         # Update chat history
+#         session['chat_history'].append({
+#             "role": "user",
+#             "content": data['message']
+#         })
+#         session['chat_history'].append({
+#             "role": "assistant",
+#             "content": response
+#         })
+
+#         # Keep only last N messages (e.g., last 10 messages) to prevent session from growing too large
+#         max_history = 10
+#         if len(session['chat_history']) > max_history * 2:  # *2 because we store both user and assistant messages
+#             session['chat_history'] = session['chat_history'][-max_history*2:]
+
+#         return jsonify(response), 200
+
+#     except Exception as e:
+#         return jsonify({
+#             'error': str(e)
+#         }), 500
+
+
+# @app.route('/api/clear-history', methods=['POST'])
+# def clear_history():
+#     if 'chat_history' in session:
+#         session['chat_history'] = []
+#     return jsonify({"message": "Chat history cleared"}), 200
+
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000, debug=False)
+
+
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from langchain_core.messages import HumanMessage, AIMessage
 from datetime import datetime
 
 app = Flask(__name__)
+CORS(app)
+app.secret_key = 'Abc123@'
 
 # In-memory chat history for demo purposes
 chat_history = [{"role": "AI", "content": "Hello! I'm a SQL assistant. Ask me anything about your database."}]
