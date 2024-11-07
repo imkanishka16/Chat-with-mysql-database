@@ -41,6 +41,8 @@ EXPOSE 5000
 CMD ["python", "new.py"]
 
 
+
+
 # # Use Python base image
 # FROM python:3.12
 

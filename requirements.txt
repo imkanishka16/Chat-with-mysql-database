@@ -37,4 +37,3 @@ pycryptodome==3.21.0
 protobuf==4.25.5
 chromadb==0.5.17
 Flask-Cors==5.0.0
-
