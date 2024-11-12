@@ -1036,24 +1036,16 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     3. Use 'bar_chart' for:
        - Simple category comparisons
        - Single metric analysis
+       - Distribution across categories
        Example format:
        [
            {{"region": "Asia", "funding": 500000}},
            {{"region": "Europe", "funding": 700000}}
        ]
 
-    4. Use 'pie_chart' for:
-       - Showing proportions of a whole
-       - Distribution across categories
-       Example format:
-       [
-           {{"name": "Category A", "value": 1000000}},
-           {{"name": "Category B", "value": 2000000}}
-       ]
-
     Your response should follow this format:
     graph_needed: "yes" or "no"
-    graph_type: one of ['line_chart', 'stack_bar_chart', 'bar_chart', 'pie_chart', 'text']
+    graph_type: one of ['line_chart', 'stack_bar_chart', 'bar_chart', 'text']
     data_array: [your data array if graph is needed]
     text_answer: Your detailed explanation
 
@@ -1103,6 +1095,17 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
         graph_type: text
         text_answer: Error occurred while processing your query: {str(e)}. Please try rephrasing your question.
         """
+
+
+    # 4. Use 'pie_chart' for:
+    #    - Showing proportions of a whole
+    #    - Distribution across categories
+    #    Example format:
+    #    [
+    #        {{"name": "Category A", "value": 1000000}},
+    #        {{"name": "Category B", "value": 2000000}}
+    #    ]
+
 
 
 # Function to extract fields using regex
