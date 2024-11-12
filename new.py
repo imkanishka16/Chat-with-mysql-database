@@ -842,6 +842,7 @@
 #     app.run(host='0.0.0.0', port=5000, debug=False)
 
 
+
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -876,75 +877,6 @@ import json
 from openai import OpenAI
 from datetime import datetime
 
-##################################################################################################3
-# #RAG part
-# chroma_client = chromadb.HttpClient(host='3.110.107.185', port=8000)
-# chroma_collection = chroma_client.get_collection("tci_glossary")
-
-# OPENAI_KEY = os.getenv('OPENAI_KEY')
-
-# class ChromaDBRetriever(BaseRetriever, BaseModel):
-#     """Custom retriever for ChromaDB that properly implements Pydantic BaseModel"""
-#     _collection: any = PrivateAttr()
-#     top_k: int = 3
-
-#     def __init__(self, **data):
-#         super().__init__(**data)
-#         self._collection = chroma_collection
-
-#     def _get_relevant_documents(self, query: str) -> List[Document]:
-#         results = self._collection.query(
-#             query_texts=[query],
-#             n_results=self.top_k
-#         )
-#         return [Document(page_content=doc) for doc in results['documents'][0]]
-
-# # Initialize the retriever
-# retriever = ChromaDBRetriever()
-
-
-# llm = ChatOpenAI(api_key=OPENAI_KEY, temperature=0, model="gpt-4o")
-
-# def rag_response(question: str) -> dict:
-    
-#     template = """You are an assistant for question-answering tasks. 
-#     Use the following context to answer the question. If you don't know the answer, just say that you don't know.
-
-#     Context: {context}
-#     Question: {question}
-
-#     Provide a clear and direct answer without any JSON formatting or special characters.
-#     """
-
-#     prompt = ChatPromptTemplate.from_template(template)
-
-#     qa_chain = RetrievalQA.from_chain_type(
-#         llm=llm,
-#         chain_type="stuff",
-#         retriever=retriever,
-#         return_source_documents=False,
-#         chain_type_kwargs={
-#             "prompt": prompt,
-#         }
-#     )
-
-#     try:
-#         raw_result = qa_chain.invoke({"query": question})
-#         # Get just the answer text and wrap it in the desired format
-#         answer_text = raw_result.get('result', '').strip()
-#         return {"text_answer": answer_text}
-#     except Exception as e:
-#         print(f"Error during chain execution: {str(e)}")
-#         return {"text_answer": "An error occurred while processing your question."}
-#End RAG part
-############################################################################################################
-
-# # Create a SQLAlchemy engine
-# engine = create_engine(os.getenv('DB_CONN_STRING'))
-# engine2 = create_engine(os.getenv('DB_CONN_STRING2'))
-# # Wrap the engine with SQLDatabase
-# db = SQLDatabase(engine)
-
 # Load OpenAI API key
 OPENAI_API_KEY = os.getenv('OPENAI_KEY')
 user = os.getenv('DB_USER')
@@ -954,7 +886,6 @@ database = os.getenv('DB_NAME')
 
 
 # Create a SQLAlchemy engine
-#engine = create_engine(os.getenv('DB_CONN_STRING'))
 engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database}")
 database_store = 'investment_tci_prompt'
 engine2 = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database_store}")
@@ -970,7 +901,11 @@ from sqlalchemy import Column, Integer, Text, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime
 
+
+
 Base = declarative_base()
+
+
 
 class UserQuery(Base):
     __tablename__ = 'user_queries'
@@ -980,6 +915,8 @@ class UserQuery(Base):
 
 # Create the table
 Base.metadata.create_all(engine2)
+
+
 
 def store_user_query(query: str, engine):
     if not query:  # Check if query is None or an empty string
@@ -992,7 +929,7 @@ def store_user_query(query: str, engine):
     session.commit()
     session.close()
 
-#  Question is not about plastic pollution give response as 'That information is not captured by my database'.
+
 
 def get_sql_chain(db):
   template = """
@@ -1075,6 +1012,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     3. All the values related to finance to be in USD million
     4. For time-based data, describe clear trends
     5. When comparing values, provide relative differences
+    6. Don't mention about technical things like 'Based on SQL result' like
     
     Visualization Guidelines - ONLY choose one if needed:
     1. Use 'line_chart' for:
@@ -1313,65 +1251,6 @@ def extract_response_data(result):
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=5000, debug=False)
 
-
-# from flask import Flask, request, jsonify, session
-# from flask_cors import CORS
-# app = Flask(__name__)
-# CORS(app)
-# app.secret_key = 'Abc123@'
-
-# @app.route('/api/chat', methods=['POST'])
-# def chat():
-#     try:
-#         if not request.is_json:
-#             return jsonify({
-#                 'error': 'Content-Type must be application/json'
-#             }), 400
-
-#         data = request.get_json()
-#         if 'message' not in data:
-#             return jsonify({
-#                 'error': 'message field is required'
-#             }), 400
-
-#         # Initialize chat history if it doesn't exist
-#         if 'chat_history' not in session:
-#             session['chat_history'] = []
-
-#         # Get response with chat history
-#         response = get_chatbot_response_with_history(data['message'], session['chat_history'])
-
-#         # Update chat history
-#         session['chat_history'].append({
-#             "role": "user",
-#             "content": data['message']
-#         })
-#         session['chat_history'].append({
-#             "role": "assistant",
-#             "content": response
-#         })
-
-#         # Keep only last N messages (e.g., last 10 messages) to prevent session from growing too large
-#         max_history = 10
-#         if len(session['chat_history']) > max_history * 2:  # *2 because we store both user and assistant messages
-#             session['chat_history'] = session['chat_history'][-max_history*2:]
-
-#         return jsonify(response), 200
-
-#     except Exception as e:
-#         return jsonify({
-#             'error': str(e)
-#         }), 500
-
-
-# @app.route('/api/clear-history', methods=['POST'])
-# def clear_history():
-#     if 'chat_history' in session:
-#         session['chat_history'] = []
-#     return jsonify({"message": "Chat history cleared"}), 200
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=False)
 
 
 from flask import Flask, request, jsonify
