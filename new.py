@@ -1009,10 +1009,11 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     Important Instructions:
     1. Use EXACTLY the same SQL query that was generated - DON'T MODIFY IT (warning!!!!)
     2. Base your answer ONLY on the SQL query results - do not use external knowledge
-    3. All the values related to finance to be in USD million
+    3. All the values related to finance to be in USD million, show with one decimal place
     4. For time-based data, describe clear trends
-    5. When comparing values, provide relative differences
+    5. When comparing values, provide relative differences,
     6. Don't mention about technical things like 'Based on SQL result' like
+    7. Try to give brief description always.
     
     Visualization Guidelines - ONLY choose one if needed:
     1. Use 'line_chart' for:
@@ -1061,6 +1062,7 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
             "question": user_query,
             "chat_history": chat_history,
         })
+        print(query)
         
         sql_response = db.run(query)
         
