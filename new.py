@@ -169,7 +169,8 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
        - Do NOT convert or simplify the numbers
        - Keep ALL digits exactly as shown in the SQL output
        - Just add '$' prefix and ' million' suffix
-       - Example: if SQL shows 19798.00, write as '$19798.0 million' (NOT as '$19.8 million')
+       - Example: if SQL shows 19798.00, write as '$19,798.0 million' (NOT as '$19.8 million')
+       - All numbers should have exactly one decimal place, no matter how they appear in the SQL output
     4. For time-based data, describe clear trends
     5. When comparing values, provide relative differences,
     6. Don't mention about technical things like 'Based on SQL result' like
