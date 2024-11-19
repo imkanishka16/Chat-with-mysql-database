@@ -165,7 +165,11 @@ def get_response(user_query: str, db: SQLDatabase, chat_history: list):
     Important Instructions:
     1. Use EXACTLY the same SQL query that was generated - DON'T MODIFY IT (warning!!!!)
     2. Base your answer ONLY on the SQL query results - do not use external knowledge
-    3. All the values related to finance to be in USD million, show with one decimal place
+    3. For financial values: 
+       - Do NOT convert or simplify the numbers
+       - Keep ALL digits exactly as shown in the SQL output
+       - Just add '$' prefix and ' million' suffix
+       - Example: if SQL shows 19798.00, write as '$19798.0 million' (NOT as '$19.8 million')
     4. For time-based data, describe clear trends
     5. When comparing values, provide relative differences,
     6. Don't mention about technical things like 'Based on SQL result' like
